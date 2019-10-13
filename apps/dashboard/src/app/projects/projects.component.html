@@ -11,7 +11,7 @@
         <mat-list>
           <mat-list-item
             (click)="selectProject(project)"
-            *ngFor="let project of projects"
+            *ngFor="let project of projects$ | async"
           >
             <h3 [style.color]="primaryColor" mat-line>
               {{ project.title }}
@@ -19,7 +19,7 @@
             <p mat-line>
               {{ project.details }}
             </p>
-            <button mat-icon-button>
+            <button mat-icon-button (click)="deleteSeletedProject(project)">
               <mat-icon>close</mat-icon>
             </button>
           </mat-list-item>
@@ -33,7 +33,7 @@
       <mat-card-header>
         <mat-card-title>
           <h1>
-            <span *ngIf="selectedProject; else elseBlock">{{
+            <span *ngIf="selectedProject.pId != null; else elseBlock">{{
               selectedProject?.title
             }}</span>
             <!-- <span *ngIf="!selectedProject">Select Project</span> -->
@@ -41,9 +41,17 @@
           </h1>
         </mat-card-title>
       </mat-card-header>
-      <form>
+      <form (submit)="saveSelectedProject(selectedProject)">
         <mat-card-content>
-          <pre>{{ selectedProject | json }}</pre>
+          <mat-form-field class="full-width">
+            <input
+              matInput
+              placeholder="Title"
+              [(ngModel)]="selectedProject.title"
+              type="text"
+              name="title"
+            />
+          </mat-form-field>
         </mat-card-content>
         <mat-card-actions>
           <button type="submit" mat-button color="primary">Save</button>

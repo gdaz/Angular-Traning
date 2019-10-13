@@ -1,4 +1,7 @@
+import { ProjectsService, Project } from '@workshop/core-data';
 import { Component, OnInit } from '@angular/core';
+import { filter } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'workshop-projects',
@@ -7,35 +10,46 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ProjectsComponent implements OnInit {
   primaryColor = 'red';
-  projects = [
-    {
-      id: '1',
-      title: 'Project One',
-      details: 'This is a sample project',
-      percentComplete: 20,
-      approved: false
-    },
-    {
-      id: '2',
-      title: 'Project Two',
-      details: 'This is a sample project',
-      percentComplete: 40,
-      approved: false
-    },
-    {
-      id: '3',
-      title: 'Project Three',
-      details: 'This is a sample project',
-      percentComplete: 100,
-      approved: true
-    }
-  ];
-
   selectedProject;
+  projects$: Observable<Array<Project>>;
+  projectsService: Project;
 
-  constructor() {}
+  constructor(private _projectsService: ProjectsService) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.getProjects();
+    this.initProjectEmpty();
+  }
+
+  initProjectEmpty() {
+    const empty: Project = {
+      id: null,
+      title: '',
+      details: '',
+      percentComplete: 0,
+      approved: false
+    };
+
+    this.selectProject(empty);
+  }
+
+  getProjects() {
+    this.projects$ = this._projectsService.all();
+  }
+
+  deleteSeletedProject(project) {
+    console.log(project.pId);
+    this._projectsService.delete(project.pId).subscribe(e => {
+      this.getProjects();
+    });
+  }
+
+  saveSelectedProject(project) {
+    console.log('Saving project ', project);
+    this._projectsService.update(project).subscribe(e => {
+      this.getProjects();
+    });
+  }
 
   selectProject(project) {
     this.selectedProject = project;
@@ -43,6 +57,6 @@ export class ProjectsComponent implements OnInit {
   }
 
   handleCancel() {
-    this.selectProject([]);
+    this.initProjectEmpty();
   }
 }
