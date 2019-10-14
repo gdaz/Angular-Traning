@@ -38,7 +38,7 @@ export class ProjectsComponent implements OnInit {
   }
 
   deleteSeletedProject(project) {
-    console.log(project.pId);
+    console.log(project);
     this._projectsService.delete(project.pId).subscribe(e => {
       this.getProjects();
     });
@@ -69,7 +69,8 @@ export class ProjectsComponent implements OnInit {
     console.log(this.selectedProject);
   }
 
-  handleCancel() {
+  handleCancel(project) {
+    console.log('CANCEL ', project);
     this.initProjectEmpty();
   }
 }
